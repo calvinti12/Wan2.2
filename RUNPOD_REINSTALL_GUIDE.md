@@ -283,3 +283,51 @@ df -h . / /tmp
 du -sh ./Wan2.2-*
 ```
 
+---
+
+## 12) Security hardening checklist (recommended)
+
+Use this every time you deploy/redeploy.
+
+1. SSH access only:
+```bash
+# Generate key locally once (on your Mac)
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+- Add only your public key to RunPod.
+- Do not share the private key (`~/.ssh/id_ed25519`).
+
+2. Keep tokens out of git:
+- Never commit tokens, API keys, `.env`, or shell history dumps.
+- Add/update `.gitignore` with:
+  - `.env`
+  - `*.pem`
+  - `*.key`
+  - `api.log`
+  - `api.pid`
+
+3. Prefer environment variables for secrets:
+```bash
+export RUNPOD_API_KEY="..."
+export HF_TOKEN="..."
+```
+- Do not hardcode secrets in scripts.
+
+4. Minimize exposed ports:
+- Expose only required ports (usually `8888` for Jupyter and `8000` for API).
+- Remove/disable ports you are not actively using.
+
+5. Restrict API usage:
+- If possible, protect API behind a token or reverse proxy auth.
+- At minimum, do not publish your proxy URL publicly.
+
+6. Rotate credentials regularly:
+- Rotate `RUNPOD_API_KEY` and Hugging Face token after setup/testing milestones.
+- Revoke old tokens you no longer use.
+
+7. Shut down when idle:
+- Stop the pod when not in use (cost + security).
+- Keep only required model files on the volume.
+
+cd /workspace/wan2.2/Wan2.2
+HF_TOKEN=your_token DOWNLOAD_T2V=1 DOWNLOAD_I2V=1 bash bootstrap_runpod.sh
