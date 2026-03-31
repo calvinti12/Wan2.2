@@ -14,7 +14,9 @@ VENV_DIR="${VENV_DIR:-.venv}"
 INSTALL_S2V="${INSTALL_S2V:-0}"
 INSTALL_ANIMATE="${INSTALL_ANIMATE:-0}"
 DOWNLOAD_T2V="${DOWNLOAD_T2V:-0}"
+DOWNLOAD_I2V="${DOWNLOAD_I2V:-0}"
 T2V_CKPT_DIR="${T2V_CKPT_DIR:-./Wan2.2-T2V-A14B}"
+I2V_CKPT_DIR="${I2V_CKPT_DIR:-./Wan2.2-I2V-A14B}"
 
 echo "[1/8] Entering repo: ${REPO_DIR}"
 cd "${REPO_DIR}"
@@ -42,7 +44,8 @@ nvcc --version
 MAX_JOBS=4 pip install flash-attn --no-build-isolation --no-cache-dir
 
 echo "[6/8] Installing required extras discovered during setup"
-pip install decord peft
+# `wan/__init__.py` imports s2v modules, so librosa is required even for t2v API.
+pip install decord peft librosa
 pip install fastapi "uvicorn[standard]" "huggingface_hub[cli]"
 
 if [[ "${INSTALL_S2V}" == "1" ]]; then
@@ -62,12 +65,29 @@ export HF_HOME=/workspace/wan2.2/hf-home
 
 if [[ -n "${HF_TOKEN:-}" ]]; then
   echo "[extra] Logging in to Hugging Face token from env"
-  hf auth login --token "${HF_TOKEN}"
+  if command -v hf >/dev/null 2>&1; then
+    hf auth login --token "${HF_TOKEN}"
+  else
+    huggingface-cli login --token "${HF_TOKEN}"
+  fi
 fi
 
 if [[ "${DOWNLOAD_T2V}" == "1" ]]; then
   echo "[extra] Downloading T2V weights"
-  hf download Wan-AI/Wan2.2-T2V-A14B --local-dir "${T2V_CKPT_DIR}"
+  if command -v hf >/dev/null 2>&1; then
+    hf download Wan-AI/Wan2.2-T2V-A14B --local-dir "${T2V_CKPT_DIR}"
+  else
+    huggingface-cli download Wan-AI/Wan2.2-T2V-A14B --local-dir "${T2V_CKPT_DIR}"
+  fi
+fi
+
+if [[ "${DOWNLOAD_I2V}" == "1" ]]; then
+  echo "[extra] Downloading I2V weights"
+  if command -v hf >/dev/null 2>&1; then
+    hf download Wan-AI/Wan2.2-I2V-A14B --local-dir "${I2V_CKPT_DIR}"
+  else
+    huggingface-cli download Wan-AI/Wan2.2-I2V-A14B --local-dir "${I2V_CKPT_DIR}"
+  fi
 fi
 
 echo "[8/8] Verifying environment"
@@ -75,4 +95,5 @@ python -c "import torch, flash_attn, decord, peft; print('OK', torch.__version__
 echo "Done."
 echo "Next:"
 echo "  source ${VENV_DIR}/bin/activate"
+echo "  hf auth login  # or: huggingface-cli login"
 echo "  uvicorn api_server:app --host 0.0.0.0 --port 8000"
