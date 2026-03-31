@@ -66,6 +66,37 @@ uvicorn api_server:app --host 0.0.0.0 --port 8000
 
 Expose port `8000` in your pod networking so you can call it externally.
 
+### Start/stop without browser terminal (recommended)
+
+This repo includes:
+
+- `start_api.sh`
+- `stop_api.sh`
+- `status_api.sh`
+
+Run on pod:
+
+```bash
+cd /workspace/wan2.2/Wan2.2
+bash start_api.sh
+bash status_api.sh
+```
+
+Stop:
+
+```bash
+cd /workspace/wan2.2/Wan2.2
+bash stop_api.sh
+```
+
+From your local terminal via SSH (example):
+
+```bash
+ssh -p YOUR_SSH_PORT root@YOUR_POD_IP "cd /workspace/wan2.2/Wan2.2 && bash start_api.sh"
+ssh -p YOUR_SSH_PORT root@YOUR_POD_IP "cd /workspace/wan2.2/Wan2.2 && bash status_api.sh"
+ssh -p YOUR_SSH_PORT root@YOUR_POD_IP "cd /workspace/wan2.2/Wan2.2 && bash stop_api.sh"
+```
+
 ## 3) Call the API
 
 Create a job:
