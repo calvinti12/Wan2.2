@@ -4,6 +4,8 @@ This runbook is based on the exact errors encountered during setup and the fixes
 
 Use this when recreating your pod/volume from scratch.
 
+Quick path: run `bootstrap_runpod.sh` (added in this repo) for one-shot setup.
+
 ---
 
 ## 0) What to provision before starting
@@ -29,11 +31,32 @@ cd /workspace/wan2.2
 apt-get update && apt-get install -y git build-essential ninja-build
 ```
 
-Clone:
+One-shot alternative after cloning:
 
 ```bash
-git clone https://github.com/Wan-Video/Wan2.2.git
+cd /workspace/wan2.2/Wan2.2
+bash bootstrap_runpod.sh
+```
+
+Optional flags:
+
+```bash
+INSTALL_S2V=1 INSTALL_ANIMATE=1 DOWNLOAD_T2V=1 bash bootstrap_runpod.sh
+```
+
+Clone your repo:
+
+```bash
+git clone https://github.com/calvinti12/Wan2.2.git
 cd Wan2.2
+```
+
+If you need upstream updates from the official project later:
+
+```bash
+cd /workspace/wan2.2/Wan2.2
+git remote add upstream https://github.com/Wan-Video/Wan2.2.git
+git fetch upstream
 ```
 
 Create venv:

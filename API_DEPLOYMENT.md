@@ -2,6 +2,20 @@
 
 This adds a simple HTTP API for T2V generation using your existing setup.
 
+Repo source of truth:
+
+- `https://github.com/calvinti12/Wan2.2.git`
+
+Fresh pod bootstrap:
+
+```bash
+cd /workspace
+mkdir -p /workspace/wan2.2
+cd /workspace/wan2.2
+git clone https://github.com/calvinti12/Wan2.2.git
+cd Wan2.2
+```
+
 ## 1) Install API deps
 
 ```bash
@@ -12,7 +26,8 @@ pip install fastapi "uvicorn[standard]"
 
 ### If you are browser-only (no local `scp`)
 
-If your pod was cloned directly and does not contain `api_server.py` or `auto_pod_generate.py`, create them from the browser terminal:
+If your pod was cloned from `https://github.com/calvinti12/Wan2.2.git`, these files should already exist.
+If they are missing, create them from the browser terminal:
 
 1. Open the file in your local editor.
 2. In pod terminal, run:
