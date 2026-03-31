@@ -33,7 +33,13 @@ pip install torch==2.5.1+cu124 torchvision==0.20.1+cu124 torchaudio==2.5.1+cu124
 pip install "numpy>=1.23.5,<2"
 
 echo "[5/8] Installing core dependencies"
-pip install -r requirements.txt
+# flash_attn often fails under build isolation ("No module named 'torch'").
+# Install requirements without flash_attn first, then install flash-attn explicitly.
+grep -v '^flash_attn$' requirements.txt > /tmp/requirements_no_flash.txt
+pip install -r /tmp/requirements_no_flash.txt
+pip install psutil ninja packaging wheel setuptools einops
+nvcc --version
+MAX_JOBS=4 pip install flash-attn --no-build-isolation --no-cache-dir
 
 echo "[6/8] Installing required extras discovered during setup"
 pip install decord peft
